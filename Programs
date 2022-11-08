@@ -1,0 +1,112 @@
+#FIND-S algorithm
+import numpy as np
+import pandas as pd
+data=pd.read_csv('/content/drive/MyDrive/ML-LAB/Book2.csv')
+#data.drop(data.columns[0], axis=1, inplace=True)
+
+d = np.array(data)[:,:-1]
+print(d)
+#print(len(d))
+target=np.array(data)[:,-1]
+print(target)
+
+def train(a,t):
+    for i,val in enumerate(t):
+        if val=='Yes':
+            s_h=a[i].copy()
+            break
+    for i, val in enumerate(a):
+        if t[i] == "Yes":
+            for x in range(len(s_h)):
+                if val[x] != s_h[x]:
+                    s_h[x] = '?'
+                else:
+                    pass
+                 
+            print(s_h)
+train(d,target)
+
+
+
+#cnadidate Elimination
+import numpy as np
+import pandas as pd
+data = pd.read_csv('/content/drive/MyDrive/ML-LAB/Book2.csv')
+#data.drop(data.columns[0], axis=1, inplace=True)#removed Example Column from dataset
+concepts = np.array(data.iloc[:,0:-1])
+print("\nInstances are:\n",concepts)
+target = np.array(data.iloc[:,-1])
+print("\nTarget Values are: ",target)
+def learning(data,target):
+    specific_h = concepts[0].copy()
+    print("\nInitialization of specific_h and genearal_h")
+    print("\nSpecific Boundary: ", specific_h)
+    general_h = [["?" for i in range(len(specific_h))] for i in range(len(specific_h))]
+    print("\nGeneric Boundary: ",general_h) 
+    for i, h in enumerate(concepts):
+        print("\nInstance", i+1 , "is ", h)
+        if target[i] == "Yes":
+            print("Instance is Positive ")
+            for x in range(len(specific_h)): 
+                if h[x]!= specific_h[x]:                    
+                    specific_h[x] ='?'                     
+                    general_h[x][x] ='?'
+        if target[i]=='No':
+            print("Instance is Negative")
+            for x in range(len(specific_h)):
+                if h[x]!=specific_h[x]:
+                    general_h[x][x]=specific_h[x]
+                else:
+                    general_h[x][x]='?'
+            
+    
+    idx=[i for i,val in enumerate(general_h) if val==['?','?','?','?','?','?']]
+    for i in idx:
+              general_h.remove(['?','?','?','?','?','?'])
+    print("Final specific_h",specific_h)
+    print("Final general_h",general_h)
+        
+    
+    
+    
+learning(data,target)
+
+
+
+
+
+
+
+
+
+
+
+
+#TExt Classification
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn import metrics
+df=pd.read_csv('/content/drive/MyDrive/ML-LAB/txtclassification.csv')
+print(df)
+#print(df.isnull.sum)
+#print(df)
+X=df.Text
+Y=df.Class 
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.4)
+print(X_train)
+print(Y_train)
+vect=CountVectorizer()
+vect.fit(X_train)
+tokenize_text=vect.transform(X_train)
+vect=CountVectorizer()
+vect.fit(X_train)
+X_train_dt = vect.transform(X_train)
+X_test_dt = vect.transform(X_test)
+nb=MultinomialNB()
+nb.fit(X_train_dt, Y_train)
+Y_pred_class = nb.predict(X_test_dt)
+print(metrics.confusion_matrix(Y_test, Y_pred_class))
+print(metrics.classification_report(Y_test, Y_pred_class))
